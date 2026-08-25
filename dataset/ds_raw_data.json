@@ -1,0 +1,47 @@
+{
+	"name": "ds_raw_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "museum_name",
+				"type": "String"
+			},
+			{
+				"name": "borough_code",
+				"type": "String"
+			},
+			{
+				"name": "location_coordinates",
+				"type": "String"
+			},
+			{
+				"name": "visitors",
+				"type": "String"
+			},
+			{
+				"name": "opened_date",
+				"type": "String"
+			}
+		]
+	}
+}
