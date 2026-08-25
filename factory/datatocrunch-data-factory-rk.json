@@ -1,0 +1,15 @@
+{
+	"name": "datatocrunch-data-factory-rk",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "canadacentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "cf65b92c-3ed6-4068-80f7-b5b8c7fd435c",
+		"tenantId": "2c60d219-2183-4709-838a-f01fa5dcc59d"
+	}
+}

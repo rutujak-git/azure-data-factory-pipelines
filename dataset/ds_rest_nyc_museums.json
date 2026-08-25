@@ -1,0 +1,13 @@
+{
+	"name": "ds_rest_nyc_museums",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_rest_nyc_museums",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

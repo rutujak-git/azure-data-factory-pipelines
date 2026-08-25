@@ -1,0 +1,134 @@
+{
+	"name": "nyc_data_cleaning",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_restapi_data",
+						"type": "DatasetReference"
+					},
+					"name": "SourceJSON",
+					"description": "Add source dataset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_nyc_restaurants_aggregated",
+						"type": "DatasetReference"
+					},
+					"name": "SinkProcessedData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectCleanColumns"
+				},
+				{
+					"name": "FilterValidInspections"
+				},
+				{
+					"name": "AddInspectionYear"
+				},
+				{
+					"name": "AggregateByBorough"
+				},
+				{
+					"name": "SortLowestScores"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {:@computed_region_92fq_4b7q} as short,",
+				"          {:@computed_region_f5dn_yrer} as short,",
+				"          {:@computed_region_sbqj_enih} as short,",
+				"          {:@computed_region_yeji_bk3q} as short,",
+				"          action as string,",
+				"          bbl as long,",
+				"          bin as integer,",
+				"          boro as string,",
+				"          building as string,",
+				"          camis as integer,",
+				"          census_tract as integer,",
+				"          community_board as short,",
+				"          council_district as short,",
+				"          critical_flag as string,",
+				"          cuisine_description as string,",
+				"          dba as string,",
+				"          grade as string,",
+				"          grade_date as string,",
+				"          inspection_date as string,",
+				"          inspection_type as string,",
+				"          latitude as double,",
+				"          location as (coordinates as double[], type as string),",
+				"          longitude as double,",
+				"          nta as string,",
+				"          phone as string,",
+				"          record_date as string,",
+				"          score as short,",
+				"          street as string,",
+				"          violation_code as string,",
+				"          violation_description as string,",
+				"          zipcode as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     rowUrlColumn: 'input_file_name',",
+				"     documentForm: 'documentPerLine') ~> SourceJSON",
+				"SourceJSON select(mapColumn(",
+				"          action,",
+				"          borough_block_lot = bbl,",
+				"          building_identification_number = bin,",
+				"          borough = boro,",
+				"          building,",
+				"          restaurant_id = camis,",
+				"          census_tract,",
+				"          community_board,",
+				"          council_district,",
+				"          critical_flag,",
+				"          cuisine_type = cuisine_description,",
+				"          restaurant_name = dba,",
+				"          grade,",
+				"          grade_date,",
+				"          inspection_date,",
+				"          inspection_type,",
+				"          latitude,",
+				"          location,",
+				"          longitude,",
+				"          neighborhood_code = nta,",
+				"          phone,",
+				"          record_date,",
+				"          score,",
+				"          street,",
+				"          violation_code,",
+				"          violation_description,",
+				"          postal_code = zipcode,",
+				"          source_file_name = input_file_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectCleanColumns",
+				"SelectCleanColumns filter(and(not(isNull(inspection_date)), inspection_date != '1900-01-01T00:00:00.000')) ~> FilterValidInspections",
+				"FilterValidInspections derive(inspection_year = left(inspection_date,4)) ~> AddInspectionYear",
+				"AddInspectionYear aggregate(groupBy(borough,",
+				"          cuisine_type),",
+				"     total_inspections = count(restaurant_id),",
+				"          avg_score = avg(score),",
+				"          max_score = max(score)) ~> AggregateByBorough",
+				"AggregateByBorough sort(asc(max_score, true)) ~> SortLowestScores",
+				"SortLowestScores sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['restaurant_aggregates.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SinkProcessedData"
+			]
+		}
+	}
+}
