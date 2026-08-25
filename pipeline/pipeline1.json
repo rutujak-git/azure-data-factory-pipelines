@@ -3,171 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copy-raw-data",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"additionalColumns": [
-							{
-								"name": "SourceFileName",
-								"value": "$$FILENAME"
-							}
-						],
-						"storeSettings": {
-							"type": "AzureBlobFSReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"enableSkipIncompatibleRow": true,
-					"logSettings": {
-						"enableCopyActivityLog": true,
-						"copyActivityLogSettings": {
-							"logLevel": "Warning",
-							"enableReliableLogging": false
-						},
-						"logLocationSettings": {
-							"linkedServiceName": {
-								"referenceName": "ls_adls",
-								"type": "LinkedServiceReference"
-							},
-							"path": "cleaned"
-						}
-					},
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "museum_id",
-									"physicalType": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "museum_name",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "museum_name",
-									"type": "String",
-									"physicalType": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "borough_code",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "borough_code",
-									"type": "String",
-									"physicalType": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "location_coordinates",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "location_coordinates",
-									"type": "String",
-									"physicalType": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "visitors",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "visitors",
-									"type": "String",
-									"physicalType": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "opened_date",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "opened_date",
-									"type": "String",
-									"physicalType": "String"
-								}
-							},
-							{
-								"source": {
-									"name": "SourceFileName",
-									"type": "String"
-								},
-								"sink": {
-									"name": "SourceFileName",
-									"type": "String",
-									"physicalType": "String"
-								}
-							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "ds_raw_data",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_clean_data",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
 				"name": "Clean-Raw-data",
 				"type": "ExecuteWranglingDataflow",
 				"dependsOn": [],
@@ -188,7 +23,21 @@
 						"coreCount": 8,
 						"computeType": "General"
 					},
-					"queries": []
+					"queries": [
+						{
+							"queryName": "UserQuery",
+							"dataflowSinks": [
+								{
+									"name": "UserQuerydscleandata",
+									"dataset": {
+										"referenceName": "ds_clean_data",
+										"type": "DatasetReference"
+									},
+									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydscleandata"
+								}
+							]
+						}
+					]
 				}
 			}
 		],
