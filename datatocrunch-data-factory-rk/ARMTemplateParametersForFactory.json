@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "datatocrunch-data-factory-rk"
+		},
+		"ls_adls_accountKey": {
+			"value": ""
+		},
+		"ls_databricks_accessToken": {
+			"value": ""
+		},
+		"ls_adls_properties_typeProperties_url": {
+			"value": "https://adlspracticerk.dfs.core.windows.net/"
+		},
+		"storage_trigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/7c8db0e7-ec96-4575-8742-4317c66e8fa7/resourceGroups/rs_practice/providers/Microsoft.Storage/storageAccounts/adlspracticerk"
+		}
+	}
+}
